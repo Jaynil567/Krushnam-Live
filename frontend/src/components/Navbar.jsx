@@ -1,3 +1,9 @@
+/*
+NOTE:
+This file still requires manual refactoring because 'isMobile' cannot be referenced
+inside the global styles object. Move responsive display styles into inline JSX or
+move styles inside the component.
+*/
 import React from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Tv, LogOut, User, LayoutDashboard, Menu, X } from 'lucide-react'
@@ -6,6 +12,20 @@ function Navbar({ user, onLogout }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = React.useState(false)
+
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 968);
+
+React.useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 968);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
 
   const handleScroll = (id) => {
     setMobileOpen(false)
@@ -173,10 +193,10 @@ const styles = {
     textShadow: '0 0 10px rgba(0, 242, 254, 0.4)',
   },
   desktopMenu: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.5rem',
-  },
+  display: isMobile ? 'none' : 'flex',
+  alignItems: 'center',
+  gap: '1.5rem',
+},
   navLink: {
     background: 'none',
     border: 'none',
@@ -195,12 +215,12 @@ const styles = {
     marginLeft: '0.5rem',
   },
   mobileToggle: {
-    display: 'none',
-    background: 'none',
-    border: 'none',
-    color: '#fff',
-    cursor: 'pointer',
-  },
+  display: isMobile ? 'block' : 'none',
+  background: 'none',
+  border: 'none',
+  color: '#fff',
+  cursor: 'pointer',
+},
   mobileMenu: {
     position: 'absolute',
     top: '4.5rem',
@@ -232,17 +252,6 @@ const styles = {
 }
 
 // Add a media query hook or dynamically inject a stylesheet override for display options:
-const styleTag = document.createElement('style')
-styleTag.innerHTML = `
-  @media (max-width: 968px) {
-    div[style*="desktopMenu"] {
-      display: none !important;
-    }
-    button[style*="mobileToggle"] {
-      display: block !important;
-    }
-  }
-`
-document.head.appendChild(styleTag)
+
 
 export default Navbar

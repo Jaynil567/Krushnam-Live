@@ -1,9 +1,3 @@
-/*
-NOTE:
-This file still requires manual refactoring because 'isMobile' cannot be referenced
-inside the global styles object. Move responsive display styles into inline JSX or
-move styles inside the component.
-*/
 import React from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Tv, LogOut, User, LayoutDashboard, Menu, X } from 'lucide-react'
@@ -13,22 +7,9 @@ function Navbar({ user, onLogout }) {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 968);
-
-React.useEffect(() => {
-  const handleResize = () => {
-    setIsMobile(window.innerWidth <= 968);
-  };
-
-  window.addEventListener("resize", handleResize);
-
-  return () => {
-    window.removeEventListener("resize", handleResize);
-  };
-}, []);
-
   const handleScroll = (id) => {
     setMobileOpen(false)
+
     if (location.pathname !== '/') {
       navigate('/')
       setTimeout(() => {
@@ -60,25 +41,25 @@ React.useEffect(() => {
         </Link>
 
         {/* Navigation Items (Desktop) */}
-        <div style={styles.desktopMenu}>
+        <div className="navbar-desktop" style={styles.desktopMenu}>
           <button onClick={() => handleScroll('hero')} style={styles.navLink}>Home</button>
           <button onClick={() => handleScroll('services')} style={styles.navLink}>Services</button>
           <button onClick={() => handleScroll('calculator')} style={styles.navLink}>Calculator</button>
           <button onClick={() => handleScroll('gallery')} style={styles.navLink}>Gallery</button>
           <button onClick={() => handleScroll('contact')} style={styles.navLink}>Contact</button>
-          
+
           {user ? (
             <div style={styles.authActions}>
-              <Link 
-                to={user.is_staff ? "/admin/dashboard" : "/customer/dashboard"} 
+              <Link
+                to={user.is_staff ? "/admin/dashboard" : "/customer/dashboard"}
                 className="btn btn-secondary"
                 style={{ padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
               >
                 <LayoutDashboard size={16} />
                 <span>Dashboard</span>
               </Link>
-              <button 
-                onClick={handleLogoutClick} 
+              <button
+                onClick={handleLogoutClick}
                 className="btn btn-neon-pink"
                 style={{ padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
               >
@@ -87,8 +68,8 @@ React.useEffect(() => {
               </button>
             </div>
           ) : (
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="btn btn-neon-pink"
               style={{ padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
             >
@@ -99,32 +80,35 @@ React.useEffect(() => {
         </div>
 
         {/* Mobile Toggle */}
-        <button style={styles.mobileToggle} onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="navbar-mobile-toggle" style={styles.mobileToggle} onClick={() => setMobileOpen((v) => !v)}>
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div style={styles.mobileMenu} className="glass-panel">
+        <div style={styles.mobileMenu} className="navbar-mobile-drawer glass-panel">
           <button onClick={() => handleScroll('hero')} style={styles.mobileNavLink}>Home</button>
           <button onClick={() => handleScroll('services')} style={styles.mobileNavLink}>Services</button>
           <button onClick={() => handleScroll('calculator')} style={styles.mobileNavLink}>Calculator</button>
           <button onClick={() => handleScroll('gallery')} style={styles.mobileNavLink}>Gallery</button>
           <button onClick={() => handleScroll('contact')} style={styles.mobileNavLink}>Contact</button>
-          
+
           {user ? (
             <div style={styles.mobileAuthActions}>
-              <Link 
-                to={user.is_staff ? "/admin/dashboard" : "/customer/dashboard"} 
+              <Link
+                to={user.is_staff ? "/admin/dashboard" : "/customer/dashboard"}
                 className="btn btn-primary"
                 onClick={() => setMobileOpen(false)}
                 style={{ width: '100%' }}
               >
                 Dashboard
               </Link>
-              <button 
-                onClick={() => { setMobileOpen(false); handleLogoutClick(); }} 
+              <button
+                onClick={() => {
+                  setMobileOpen(false)
+                  handleLogoutClick()
+                }}
                 className="btn btn-neon-pink"
                 style={{ width: '100%' }}
               >
@@ -132,8 +116,8 @@ React.useEffect(() => {
               </button>
             </div>
           ) : (
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="btn btn-neon-pink"
               onClick={() => setMobileOpen(false)}
               style={{ width: '100%', marginTop: '1rem' }}
@@ -143,6 +127,17 @@ React.useEffect(() => {
           )}
         </div>
       )}
+
+      {/* Responsive CSS (no JS-based window usage inside style objects) */}
+      <style>{`
+        .navbar-desktop { display: flex; align-items: center; gap: 1.5rem; }
+        .navbar-mobile-toggle { display: none; }
+        @media (max-width: 968px) {
+          .navbar-desktop { display: none !important; }
+          .navbar-mobile-toggle { display: inline-flex !important; }
+          .navbar-mobile-drawer { position: absolute; top: 4.5rem; left: 0; right: 0; }
+        }
+      `}</style>
     </nav>
   )
 }
@@ -193,10 +188,10 @@ const styles = {
     textShadow: '0 0 10px rgba(0, 242, 254, 0.4)',
   },
   desktopMenu: {
-  display: isMobile ? 'none' : 'flex',
-  alignItems: 'center',
-  gap: '1.5rem',
-},
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1.5rem',
+  },
   navLink: {
     background: 'none',
     border: 'none',
@@ -215,12 +210,11 @@ const styles = {
     marginLeft: '0.5rem',
   },
   mobileToggle: {
-  display: isMobile ? 'block' : 'none',
-  background: 'none',
-  border: 'none',
-  color: '#fff',
-  cursor: 'pointer',
-},
+    background: 'none',
+    border: 'none',
+    color: '#fff',
+    cursor: 'pointer',
+  },
   mobileMenu: {
     position: 'absolute',
     top: '4.5rem',
@@ -232,6 +226,7 @@ const styles = {
     gap: '1rem',
     borderRadius: '16px',
     border: '1px solid rgba(255, 255, 255, 0.08)',
+    zIndex: 200,
   },
   mobileNavLink: {
     background: 'none',
@@ -251,7 +246,5 @@ const styles = {
   },
 }
 
-// Add a media query hook or dynamically inject a stylesheet override for display options:
-
-
 export default Navbar
+

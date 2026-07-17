@@ -8,7 +8,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import Navbar from './components/Navbar'
 
 // Base API URL configuration
-export const API_URL = import.meta.env.VITE_API_URL || 'https://krushnam-live.onrender.com'
+export const API_URL = import.meta.env.VITE_API_URL || 'https://krushnam-live.onrender.com/api'
 
 function App() {
   const [user, setUser] = useState(null)

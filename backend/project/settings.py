@@ -133,7 +133,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # STATICFILES_DIRS = []
 
 # Enable WhiteNoise's Gzip/Brotli compression of static assets
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 # Cloudinary media configurations
 
@@ -190,6 +190,6 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-    "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-}
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
 }
